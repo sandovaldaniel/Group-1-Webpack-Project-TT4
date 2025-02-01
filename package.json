@@ -1,0 +1,33 @@
+{
+  "name": "group-1-webpack-project-tt4",
+  "version": "1.0.0",
+  "main": "products.js",
+  "scripts": {
+    "start": "webpack server --mode development",
+    "build": "webpack --mode production",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Prats0509/Group-1-Webpack-Project-TT4.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Prats0509/Group-1-Webpack-Project-TT4/issues"
+  },
+  "homepage": "https://github.com/Prats0509/Group-1-Webpack-Project-TT4#readme",
+  "description": "",
+  "dependencies": {
+    "babel-loader": "^9.2.1",
+    "css-loader": "^7.1.2",
+    "html-webpack-plugin": "^5.6.3",
+    "mini-css-extract-plugin": "^2.9.2",
+    "sass": "^1.83.4",
+    "sass-loader": "^16.0.4"
+  },
+  "devDependencies": {
+    "html-loader": "^5.1.0",
+    "webpack-cli": "^6.0.1"
+  }
+}

@@ -1,0 +1,1 @@
+(()=>{"use strict";document.addEventListener("DOMContentLoaded",(()=>{document.querySelectorAll(".product-card").forEach((t=>{t.addEventListener("click",(()=>{const e=t.getAttribute("data-product-name");alert(`Product selected: ${e}`)}))}))}))})();
