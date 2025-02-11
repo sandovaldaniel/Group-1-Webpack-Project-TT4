@@ -3,15 +3,17 @@
 // Declare libraries
 const express = require("express");
 const mysql = require("mysql2/promise");
+const cors = require['cors'];
  
 const app = express();
 const port = 3000;
+app.use(cors());
 
 const dbConfig = {
     host: "localhost",
-    user: "in-class-user",
+    user: "productsuser",
     password: "123456",
-    database: "in-class-db",
+    database: "productsdb",
     port: 3306, 
   };
 
@@ -34,8 +36,8 @@ app.post("/message", async (req, res) => {
 
     try {
         const conn = await mysql.createConnection(dbConfig);
-        const query = "INSERT INTO users (name, price, message) VALUES (?, ?, ?)";
-        await conn.execute(query, [name, email, message]);
+        const query = "INSERT INTO users (name, price, url, description, message) VALUES (?, ?, ?, ?, ?)";
+        await conn.execute(query, [name, price, URL, description, message]);
         await conn.end();
     
         res.status(201).json({ message: "Created with success" });
@@ -60,7 +62,7 @@ app.post("/message", async (req, res) => {
 async function initDatabase() {
     try {
       const conn = await mysql.createConnection(dbConfig);
-      const [tables] = await conn.query("SHOW TABLES like 'messages'"); // an object {..., tables: [ ... ]}
+      const [tables] = await conn.query("SHOW TABLES like 'messages'"); 
   
       if (tables.length === 0) {
         const createTableQuery = `
@@ -68,6 +70,8 @@ async function initDatabase() {
             id INT AUTO_INCREMENT PRIMARY KEY,
             name VARCHAR(200) NOT NULL,
             price INT NOT NULL,
+            url TEXT,
+            description TEXT,
             message TEXT NOT NULL,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
           );
