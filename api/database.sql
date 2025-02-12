@@ -1,7 +1,8 @@
-CREATE TABLE IF NOT EXISTS messages (
+CREATE TABLE IF NOT EXISTS products (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(200) NOT NULL,
     price FLOAT NOT NULL,
-    message TEXT NOT NULL,
+    url TEXT,
+    description TEXT, 
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
