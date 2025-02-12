@@ -5,7 +5,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
     entry: {
-      products: './products.js',
+      products: './list.js',
     },
 
     output: {
@@ -36,15 +36,15 @@ module.exports = {
         filename: '[name].css',
       }),
       new HtmlWebpackPlugin({
-        template: './products.html',
+        template: './list.html',
         chunks: ['main'],
-        filename: 'products.html',
+        filename: 'list.html',
       }),
       
     ],
 
     devServer: {
       static: './dist',
-      port: 9000,
+      port: 3000,
     },
   };

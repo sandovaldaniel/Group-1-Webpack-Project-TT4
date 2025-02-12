@@ -25,7 +25,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const messagesListHTML = messages.map(m => `
             <div class="message-card">
                 <p><b>Name: </b> ${m.name} </p>
-                <p><b>Email: </b> ${m.email} </p>
+                <p><b>Price: </b> ${m.price} </p>
+                <p><b>URL: </b> ${m.url} </p>
+                <p><b>Description: </b> ${m.description} </p>
                 <p><b>Message: </b> ${m.message} </p>
             </div>
         `).join('');
