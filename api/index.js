@@ -1,99 +1,98 @@
-//Node js
- 
-// Declare libraries
 const express = require("express");
 const mysql = require("mysql2/promise");
-const cors = require['cors'];
- 
+const cors = require("cors");
+
 const app = express();
 const port = 3000;
 app.use(cors());
+app.use(express.json());
 
 const dbConfig = {
     host: "localhost",
     user: "productsuser",
     password: "123456",
     database: "productsdb",
-    port: 3306, 
-  };
+    port: 3306,
+};
 
+const pool = mysql.createPool(dbConfig);
 
-app.use(express.json());
-//HTTP words: POST,GET,PUT,FETCH
-//first endpoint
-//get
-app.get("/",(req,res) => {
-    res.status(200).json({message : "api is running"})
+async function connectToDatabase() {
+    try {
+        const connection = await pool.getConnection();
+        console.log("Connected to the database successfully");
+        return connection;
+    } catch (e) {
+        console.error("Database connection error:", e.message);
+        process.exit(1);
+    }
+}
+
+app.get("/", (req, res) => {
+    res.status(200).json({ message: "API is running" });
 });
- 
-//post
-app.post("/message", async (req, res) => {
-    const { name, email, message } = req.body;
-  
-    if (!name || !price || !message) {
-      return res.status(400).json({ error: "All field are required" });
+
+app.post("/products", async (req, res) => {
+    const { name, price, url, description } = req.body;
+
+    if (!name || !price) {
+        return res.status(400).json({ error: "Name and price are required" });
     }
 
     try {
-        const conn = await mysql.createConnection(dbConfig);
-        const query = "INSERT INTO users (name, price, url, description, message) VALUES (?, ?, ?, ?, ?)";
-        await conn.execute(query, [name, price, URL, description, message]);
-        await conn.end();
-    
-        res.status(201).json({ message: "Created with success" });
-      } catch (e) {
-        res.status(500), json({ error: `Something happens in the server: ${e}` });
-      }
-    });
+        const conn = await pool.getConnection();
+        const query = "INSERT INTO products (name, price, url, description) VALUES (?, ?, ?, ?)";
+        await conn.execute(query, [name, price, url, description]);
+        conn.release();
 
-    app.get("/message", async () => {
-        try {
-          const conn = await mysql.createConnection(dbConfig);
-          const [rows] = await conn.execute("SELECT * FROM messages"); // an object { ..., rows: [{..}]}
-          await conn.end();
-          res.status(200).json(rows); // [ {name, email, message} ]
-        } catch (e) {
-          res.status(500).json({ error: `Fail: ${e}` });
-        }
-      });
+        res.status(201).json({ message: "Products created successfully" });
+    } catch (e) {
+        res.status(500).json({ error: `Server error: ${e.message}` });
+    }
+});
 
+app.get("/products", async (req, res) => {
+    try {
+        const conn = await pool.getConnection();
+        const [rows] = await conn.execute("SELECT * FROM products");
+        conn.release();
 
+        res.status(200).json(rows);
+    } catch (e) {
+        res.status(500).json({ error: `Server error: ${e.message}` });
+    }
+});
 
 async function initDatabase() {
     try {
-      const conn = await mysql.createConnection(dbConfig);
-      const [tables] = await conn.query("SHOW TABLES like 'messages'"); 
-  
-      if (tables.length === 0) {
-        const createTableQuery = `
-          CREATE TABLE IF NOT EXISTS messages (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            name VARCHAR(200) NOT NULL,
-            price INT NOT NULL,
-            url TEXT,
-            description TEXT,
-            message TEXT NOT NULL,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-          );
-        `;
-        await conn.query(createTableQuery);
-      console.log("Table created");
-    } else {
-      console.log("Table already created");
-    }
+        const conn = await pool.getConnection();
+        const [tables] = await conn.query("SHOW TABLES LIKE 'products'");
 
-    await conn.end();
-  } catch (e) {
-    console.error(`Database error: ${e}`);
-    process.exit(1);
-  }
+        if (tables.length === 0) {
+            const createTableQuery = `
+                CREATE TABLE IF NOT EXISTS products (
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    name VARCHAR(200) NOT NULL,
+                    price FLOAT NOT NULL,
+                    url TEXT,
+                    description TEXT,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                );
+            `;
+            await conn.query(createTableQuery);
+            console.log("Products table created.");
+        } else {
+            console.log("Products table already exists.");
+        }
+        conn.release();
+    } catch (e) {
+        console.error(`Database error: ${e.message}`);
+        process.exit(1);
+    }
 }
 
-
-
 initDatabase().then(() => {
-  app.listen(port, () => {
-    console.log(`The server is runing, PORT: ${port}`);
-  });
-})
-
+    app.listen(port, () => {
+        console.log(`Server running on PORT: ${port}`);
+    });
+});
